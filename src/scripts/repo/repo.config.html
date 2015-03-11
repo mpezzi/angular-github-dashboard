@@ -1,0 +1,58 @@
+<h2>Configure</h2>
+
+<p>Set up your Github token and repositories to display.</p>
+
+<form name="configForm" novalidate>
+
+  <fieldset class="form__fieldset">
+    <legend>General</legend>
+    <md-input-container>
+      <label>Github Token</label>
+      <input name="token"
+             ng-model="vm.config.token"
+             ng-model-options="{ debounce: 500, blur: 0 }"
+             required
+             require-valid-github-token>
+      <div ng-if="vm.showError(configForm, 'token')"
+           ng-messages="configForm.token.$error">
+        <div ng-message="required">Please provide a Github authentication token.</div>
+        <div ng-message="validGithubToken">Please provide a valid Github authentication token.</div>
+      </div>
+    </md-input-container>
+  </fieldset>
+
+  <fieldset class="form__fieldset">
+    <legend>Repositories</legend>
+    <section layout="row" ng-repeat="row in vm.getRows(vm.rows) track by $index">
+      <md-input-container flex>
+        <label>Repo Owner</label>
+        <input name="owner_{{ $index }}"
+               ng-model="vm.config.repos[$index].owner"
+               required>
+        <div ng-if="vm.showError(configForm, 'owner_' + $index)"
+             ng-messages="configForm['owner_' + $index].$error">
+          <div ng-message="required">Please provide a repository owner.</div>
+        </div>
+      </md-input-container>
+      <md-input-container flex>
+        <label>Repo Name</label>
+        <input name="name_{{ $index }}"
+               ng-model="vm.config.repos[$index].name"
+               required>
+        <div ng-if="vm.showError(configForm, 'name_' + $index)"
+             ng-messages="configForm['name_' + $index].$error">
+          <div ng-message="required">Please provide a repository name.</div>
+        </div>
+      </md-input-container>
+    </section>
+    <md-button ng-click="vm.addRow()">Add row</md-button>
+    <md-button ng-click="vm.removeRow()">Remove row</md-button>
+  </fieldset>
+
+  <section class="form__actions">
+    <md-button class="md-raised md-primary" ng-click="configForm.$valid && vm.submit(vm.config)">Save</md-button>
+    <md-button class="md-raised" ng-click="vm.cancel()">Cancel</md-button>
+  </section>
+
+</form>
+
