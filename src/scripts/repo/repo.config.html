@@ -23,7 +23,7 @@
 
   <fieldset class="form__fieldset">
     <legend>Repositories</legend>
-    <section layout="row" ng-repeat="row in vm.getRows(vm.rows) track by $index">
+    <section layout="row" layout-sm="column" ng-repeat="row in vm.getRows(vm.rows) track by $index">
       <md-input-container flex>
         <label>Repo Owner</label>
         <input name="owner_{{ $index }}"
@@ -55,4 +55,3 @@
   </section>
 
 </form>
-
