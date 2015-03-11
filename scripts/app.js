@@ -57,11 +57,11 @@ var app;
 (function (app) {
     var common;
     (function (common) {
-        var github;
-        (function (github) {
+        var storage;
+        (function (storage) {
             'use strict';
-            app.addModule('app.common.github', []);
-        })(github = common.github || (common.github = {}));
+            app.addModule('app.common.storage', []);
+        })(storage = common.storage || (common.storage = {}));
     })(common = app.common || (app.common = {}));
 })(app || (app = {}));
 
@@ -69,11 +69,11 @@ var app;
 (function (app) {
     var common;
     (function (common) {
-        var storage;
-        (function (storage) {
+        var github;
+        (function (github) {
             'use strict';
-            app.addModule('app.common.storage', []);
-        })(storage = common.storage || (common.storage = {}));
+            app.addModule('app.common.github', []);
+        })(github = common.github || (common.github = {}));
     })(common = app.common || (app.common = {}));
 })(app || (app = {}));
 
@@ -301,6 +301,40 @@ var app;
 (function (app) {
     var common;
     (function (common) {
+        var storage;
+        (function (storage) {
+            'use strict';
+            var StorageService = (function () {
+                function StorageService() {
+                }
+                StorageService.prototype.setItem = function (key, value) {
+                    var storedValue = {
+                        data: value
+                    };
+                    localStorage.setItem(key, JSON.stringify(storedValue));
+                };
+                StorageService.prototype.getItem = function (key) {
+                    var storedValue = JSON.parse(localStorage.getItem(key));
+                    if (storedValue && storedValue.data) {
+                        return storedValue.data;
+                    }
+                    return undefined;
+                };
+                StorageService.prototype.removeItem = function (key) {
+                    localStorage.removeItem(key);
+                };
+                return StorageService;
+            })();
+            storage.StorageService = StorageService;
+            app.addService('app.common.storage', 'StorageService', StorageService);
+        })(storage = common.storage || (common.storage = {}));
+    })(common = app.common || (app.common = {}));
+})(app || (app = {}));
+
+var app;
+(function (app) {
+    var common;
+    (function (common) {
         var github;
         (function (github) {
             'use strict';
@@ -386,39 +420,5 @@ var app;
             github.GithubTokenValidateDirective = GithubTokenValidateDirective;
             app.addDirective('app.common.github', 'requireValidGithubToken', GithubTokenValidateDirective);
         })(github = common.github || (common.github = {}));
-    })(common = app.common || (app.common = {}));
-})(app || (app = {}));
-
-var app;
-(function (app) {
-    var common;
-    (function (common) {
-        var storage;
-        (function (storage) {
-            'use strict';
-            var StorageService = (function () {
-                function StorageService() {
-                }
-                StorageService.prototype.setItem = function (key, value) {
-                    var storedValue = {
-                        data: value
-                    };
-                    localStorage.setItem(key, JSON.stringify(storedValue));
-                };
-                StorageService.prototype.getItem = function (key) {
-                    var storedValue = JSON.parse(localStorage.getItem(key));
-                    if (storedValue && storedValue.data) {
-                        return storedValue.data;
-                    }
-                    return undefined;
-                };
-                StorageService.prototype.removeItem = function (key) {
-                    localStorage.removeItem(key);
-                };
-                return StorageService;
-            })();
-            storage.StorageService = StorageService;
-            app.addService('app.common.storage', 'StorageService', StorageService);
-        })(storage = common.storage || (common.storage = {}));
     })(common = app.common || (app.common = {}));
 })(app || (app = {}));
