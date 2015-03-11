@@ -5,7 +5,10 @@ var gulp    = require('gulp'),
     config  = require('../utils/config');
 
 gulp.task('watch', function () {
-  $.watch(config.settings.watch, function () {
-    gulp.start('server:reload:page');
+  $.watch([
+    './src/index.html',
+    './src/scripts/**/*'
+  ], function () {
+    gulp.start('build');
   });
 });
