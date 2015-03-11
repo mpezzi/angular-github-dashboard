@@ -11,6 +11,7 @@ module app.repo {
     /* @ngInject */
     constructor (
       private $state:any,
+      private $timeout:ng.ITimeoutService,
       private StorageService:app.common.storage.StorageService
     ) {
 
@@ -19,7 +20,12 @@ module app.repo {
         repos: this.StorageService.getItem('githubRepos')
       };
 
-      this.rows = this.config.repos.length;
+      if (this.config.repos) {
+        this.rows = this.config.repos.length;
+      }
+      else {
+        this.rows = 1;
+      }
 
     }
 
@@ -65,7 +71,9 @@ module app.repo {
 
       this.StorageService.setItem('githubRepos', repos);
 
-      this.$state.go('repo');
+      this.$timeout(() => {
+        this.$state.go('repo');
+      }, 500);
 
     }
 

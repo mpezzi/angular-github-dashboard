@@ -82,14 +82,20 @@ var app;
     (function (_repo) {
         'use strict';
         var RepoConfigController = (function () {
-            function RepoConfigController($state, StorageService) {
+            function RepoConfigController($state, $timeout, StorageService) {
                 this.$state = $state;
+                this.$timeout = $timeout;
                 this.StorageService = StorageService;
                 this.config = {
                     token: this.StorageService.getItem('githubToken'),
                     repos: this.StorageService.getItem('githubRepos')
                 };
-                this.rows = this.config.repos.length;
+                if (this.config.repos) {
+                    this.rows = this.config.repos.length;
+                }
+                else {
+                    this.rows = 1;
+                }
             }
             RepoConfigController.prototype.getRows = function (num) {
                 return new Array(num);
@@ -108,13 +114,16 @@ var app;
                 return (form[field].$dirty && form[field].$invalid) || form.$submitted;
             };
             RepoConfigController.prototype.submit = function (data) {
+                var _this = this;
                 var repos = [];
                 this.StorageService.setItem('githubToken', data.token);
                 angular.forEach(data.repos, function (repo) {
                     repos.push({ owner: repo.owner, name: repo.name });
                 });
                 this.StorageService.setItem('githubRepos', repos);
-                this.$state.go('repo');
+                this.$timeout(function () {
+                    _this.$state.go('repo');
+                }, 500);
             };
             RepoConfigController.prototype.cancel = function () {
                 this.$state.go('repo');
@@ -132,13 +141,20 @@ var app;
     (function (_repo) {
         'use strict';
         var RepoController = (function () {
-            function RepoController(GithubService, StorageService) {
+            function RepoController($state, GithubService, StorageService) {
+                this.$state = $state;
                 this.GithubService = GithubService;
                 this.StorageService = StorageService;
                 this.repos = {};
                 this.reposToList = [];
+                this.token = StorageService.getItem('githubToken');
                 this.reposToList = StorageService.getItem('githubRepos') || [];
-                this.loadRepos();
+                if (this.token && this.reposToList) {
+                    this.loadRepos();
+                }
+                else {
+                    this.$state.go('repo.config');
+                }
             }
             RepoController.prototype.loadRepos = function () {
                 var _this = this;
@@ -293,7 +309,6 @@ var app;
                     this.$log = $log;
                     this.StorageService = StorageService;
                     this.basePath = 'https://api.github.com';
-                    this.token = this.StorageService.getItem('githubToken');
                 }
                 GithubService.prototype.checkToken = function (token) {
                     return this.request('GET', '/user', { headers: { 'Authorization': 'token ' + token } }).then(function (res) {
@@ -319,7 +334,8 @@ var app;
                 };
                 GithubService.prototype.request = function (method, endpoint, requestConfig) {
                     if (requestConfig === void 0) { requestConfig = {}; }
-                    if (!this.token) {
+                    var token = this.StorageService.getItem('githubToken');
+                    if (!token) {
                         this.$log.warn('Github Auth Token not set.');
                     }
                     var config = angular.extend({}, {
@@ -329,7 +345,7 @@ var app;
                         headers: {
                             'Accept': 'application/vnd.github.v3.raw+json',
                             'Content-Type': 'application/json;charset=UTF-8',
-                            'Authorization': 'token ' + this.token
+                            'Authorization': 'token ' + token
                         }
                     }, requestConfig);
                     return this.$http(config);

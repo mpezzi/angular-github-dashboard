@@ -6,8 +6,6 @@ module app.common.github {
 
     basePath : string;
 
-    token : string;
-
     /* @ngInject */
     constructor (
       private $http : ng.IHttpService,
@@ -16,7 +14,6 @@ module app.common.github {
     ) {
 
       this.basePath = 'https://api.github.com';
-      this.token    = this.StorageService.getItem('githubToken');
 
     }
 
@@ -54,7 +51,9 @@ module app.common.github {
 
     request ( method:string, endpoint:string, requestConfig:Object = {}) {
 
-      if (!this.token) {
+      var token = this.StorageService.getItem('githubToken');
+
+      if (!token) {
         this.$log.warn('Github Auth Token not set.');
       }
 
@@ -65,7 +64,7 @@ module app.common.github {
         headers: {
           'Accept': 'application/vnd.github.v3.raw+json',
           'Content-Type': 'application/json;charset=UTF-8',
-          'Authorization': 'token ' + this.token
+          'Authorization': 'token ' + token
         }
       }, requestConfig);
 

@@ -6,17 +6,26 @@ module app.repo {
 
     repos : any = {};
 
+    token : string;
+
     reposToList : any = [];
 
     /* @ngInject */
     constructor (
+        private $state : ng.ui.IStateService,
         private GithubService : app.common.github.GithubService,
         private StorageService : app.common.storage.StorageService
       ) {
 
+      this.token = StorageService.getItem('githubToken');
       this.reposToList = StorageService.getItem('githubRepos') || [];
 
-      this.loadRepos();
+      if (this.token && this.reposToList) {
+        this.loadRepos();
+      }
+      else {
+        this.$state.go('repo.config');
+      }
 
     }
 
