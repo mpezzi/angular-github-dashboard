@@ -52,7 +52,8 @@ module app {
     'ngMessages',
     'ngMaterial',
 
-    'app.repo'
+    'app.repo',
+    'app.templates'
 
   ]);
 

@@ -35,7 +35,8 @@ var app;
         'ngAria',
         'ngMessages',
         'ngMaterial',
-        'app.repo'
+        'app.repo',
+        'app.templates'
     ]);
 })(app || (app = {}));
 
